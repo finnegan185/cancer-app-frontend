@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Axios from "axios";
-import { useImmer } from "use-immer";
+import React from "react";
 
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -10,7 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
-import LoadingDotsIcon from "./LoadingDotsIcon";
+import { useImmer } from "use-immer";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -30,62 +28,41 @@ function getStyles(term, selectedData, theme) {
 }
 
 export default function MUIMultipleComboBox(props) {
-  const [data, setData] = useImmer({
-    isLoading: true,
-    multiSelectItems: [],
-    selectedData: [],
+  const [state, setState] = useImmer({
+    title: props.selectProps.title,
+    multiSelectData: props.selectProps.multiSelectData,
+    selectedData: props.selectProps.selectedData,
   });
-
-  useEffect(() => {
-    const ourRequest = Axios.CancelToken.source();
-    async function fetchData() {
-      try {
-        const response = await Axios.post("/competing-search", { field: props.title });
-        if (!response.data) {
-        } else {
-          setData((draft) => {
-            draft.isLoading = false;
-            draft.multiSelectItems = response.data;
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchData();
-    return () => ourRequest.cancel();
-  }, []);
 
   const theme = useTheme();
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setData((draft) => {
-      if (typeof value === "string") {
-        draft.selectedData = value.split(",");
-      } else {
-        draft.selectedData = value;
-      }
-    });
-  };
-
-  if (data.isLoading) {
-    return <LoadingDotsIcon />;
+  function handleSelectedChange(e) {
+    props.onChange(e, state.title);
   }
+  // const handleChange = (event) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setState((draft) => {
+  //     if (typeof value === "string") {
+  //       draft.selectedData = value.split(",");
+  //     } else {
+  //       draft.selectedData = value;
+  //     }
+  //   });
+  // };
 
   return (
     <div>
       <FormControl sx={{ m: 1, my: 4, display: "flex", bgcolor: "#f7f8f8", boxShadow: 1, borderRadius: 2 }}>
-        <InputLabel id="demo-multiple-chip-label">{props.title}</InputLabel>
+        <InputLabel id="demo-multiple-chip-label">{state.title}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
-          value={data.selectedData}
-          onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label={props.title} />}
+          value={state.selectedData}
+          onChange={handleSelectedChange}
+          input={<OutlinedInput id="select-multiple-chip" label={state.title} />}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
@@ -95,8 +72,8 @@ export default function MUIMultipleComboBox(props) {
           )}
           MenuProps={MenuProps}
         >
-          {data.multiSelectItems.map((term) => (
-            <MenuItem key={term} value={term} style={getStyles(term, data.selectedData, theme)}>
+          {state.multiSelectData.map((term) => (
+            <MenuItem key={term} value={term} style={getStyles(term, state.selectedData, theme)}>
               {term}
             </MenuItem>
           ))}
