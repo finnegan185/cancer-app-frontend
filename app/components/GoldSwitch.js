@@ -14,8 +14,8 @@ const GoldSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export default function ThSwitch(props) {
+export default function TheSwitch(props) {
   const label = { inputProps: { "aria-label": "measurable disease switch", label: "need measurable disease" } };
 
-  return <GoldSwitch {...label} />;
+  return <GoldSwitch {...label} onChange={() => props.onChange()} />;
 }

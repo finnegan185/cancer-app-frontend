@@ -28,41 +28,24 @@ function getStyles(term, selectedData, theme) {
 }
 
 export default function MUIMultipleComboBox(props) {
-  const [state, setState] = useImmer({
-    title: props.selectProps.title,
-    multiSelectData: props.selectProps.multiSelectData,
-    selectedData: props.selectProps.selectedData,
-  });
-
   const theme = useTheme();
 
-  function handleSelectedChange(e) {
-    props.onChange(e, state.title);
-  }
-  // const handleChange = (event) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setState((draft) => {
-  //     if (typeof value === "string") {
-  //       draft.selectedData = value.split(",");
-  //     } else {
-  //       draft.selectedData = value;
-  //     }
-  //   });
-  // };
+  let selectID = props.selectProps.id + "-select";
+  let inputID = props.selectProps.id + "-label";
 
   return (
     <div>
       <FormControl sx={{ m: 1, my: 4, display: "flex", bgcolor: "#f7f8f8", boxShadow: 1, borderRadius: 2 }}>
-        <InputLabel id="demo-multiple-chip-label">{state.title}</InputLabel>
+        <InputLabel id={selectID}>{props.selectProps.title}</InputLabel>
         <Select
-          labelId="demo-multiple-chip-label"
-          id="demo-multiple-chip"
+          name={props.selectProps.title}
+          labelId={inputID}
+          id={selectID}
+          onClose={(e) => props.onClose(e.target.id)}
           multiple
-          value={state.selectedData}
-          onChange={handleSelectedChange}
-          input={<OutlinedInput id="select-multiple-chip" label={state.title} />}
+          value={props.selectProps.selectedData}
+          onChange={(e) => props.onChange(e)}
+          input={<OutlinedInput id="select-multiple-chip" label={props.selectProps.title} />}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
@@ -72,8 +55,8 @@ export default function MUIMultipleComboBox(props) {
           )}
           MenuProps={MenuProps}
         >
-          {state.multiSelectData.map((term) => (
-            <MenuItem key={term} value={term} style={getStyles(term, state.selectedData, theme)}>
+          {props.selectProps.data.map((term) => (
+            <MenuItem key={term} value={term} style={getStyles(term, props.selectProps.selectedData, theme)}>
               {term}
             </MenuItem>
           ))}

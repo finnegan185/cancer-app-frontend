@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
-import Axios from 'axios'
-import Page from "./Page";
-import Downshift from "downshift";
-import MultipleComboBox from "./MultipleComboBox";
-import MUIMultipleComboBox from "./MUIMultipleComboBox";
+import Axios from "axios";
 import { FormControlLabel, FormControl } from "@mui/material";
+
+// My Components
+import Page from "./Page";
+import MUIMultipleComboBox from "./MUIMultipleComboBox";
 import GoldSwitch from "./GoldSwitch";
 import LoadingDotsIcon from "./LoadingDotsIcon";
+import TrialSearchResults from "./TrialSearchResults";
 
 function CompetingSearch(props) {
   console.log("Competing search linked to");
@@ -15,41 +16,38 @@ function CompetingSearch(props) {
   // Create the state for the component
   const [state, setState] = useImmer({
     isLoading: true,
-    multiSelectTypes: {title: "Disease Type(s)", multiSelectData: [], selectedData: [] },
-    multiSelectStages: { title: "Disease Stage(s)", multiSelectData: [], selectedData: [] }, 
-    multiSelectMutations: { title: "Disease Mutation(s)", multiSelectData: [], selectedData: [] }, 
-    multiSelectLine: { title: "Line of Therapy", multiSelectData: [], selectedData: [] }, 
-    multiSelectExpectancy: { title: "Life Expectancy", multiSelectData: [], selectedData: [] },
+    types: { title: "Disease Type(s)", data: [], selectedData: [], id: "type" },
+    stages: { title: "Disease Stage(s)", data: [], selectedData: [], id: "stage" },
+    mutations: { title: "Disease Mutation(s)", data: [], selectedData: [], id: "mutation" },
+    line: { title: "Line of Therapy", data: [], selectedData: [], id: "line" },
+    expectancy: { title: "Life Expectancy", data: [], selectedData: [], id: "expectancy" },
     needsMeasurableDisease: false,
+    haveResults: false,
   });
 
   useEffect(() => {
     const ourRequest = Axios.CancelToken.source();
     async function fetchData() {
       try {
-        Promise.all([
-          Axios.post("/competing-search", { field: state.multiSelectTypes.title}),
-          Axios.post("/competing-search", { field: state.multiSelectStages.title}),
-          Axios.post("/competing-search", { field: state.multiSelectMutations.title}),
-          Axios.post("/competing-search", { field: state.multiSelectLine.title}),
-          Axios.post("/competing-search", { field: state.multiSelectExpectancy.title})
-        ])
+        let fields = [state.types.id, state.stages.id, state.mutations.id, state.line.id, state.expectancy.id];
+
+        let response = await Axios.post("/competing-search-get-data", { fields: fields });
+
         // Looping through the responses to populate the data for each of the multiselect objects
-        .then(response => {
-
+        if (response.data) {
+          console.log("needs measurable disease", state.needsMeasurableDisease);
           setState((draft) => {
-            draft.multiSelectTypes.multiSelectData = response[0].data
-            draft.multiSelectStages.multiSelectData = response[1].data
-            draft.multiSelectMutations.multiSelectData = response[2].data
-            draft.multiSelectLine.multiSelectData = response[3].data
-            draft.multiSelectExpectancy.multiSelectData = response[4].data
+            draft.types.data = response.data[0];
+            draft.stages.data = response.data[1];
+            draft.mutations.data = response.data[2];
+            draft.line.data = response.data[3];
+            draft.expectancy.data = response.data[4];
             draft.isLoading = false;
-          })
-          
-        })
-        .catch((e) =>{console.log("lame")})
-        // const response = await Axios.post("/competing-search", { fields: state.multiSelectTitles });
-
+          });
+        } else {
+          // need 404 page
+          console.log(error);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -58,29 +56,86 @@ function CompetingSearch(props) {
     return () => ourRequest.cancel();
   }, []);
 
+  // handle submit not done, probably not needed
   async function handleSubmit(e) {
-    e.preventDefault()
-    console.log(state.multiSelectTypes.selectedData)
-    console.log(state.multiSelectMutations.selectedData)
+    e.preventDefault();
+    console.log(state.types.selectedData);
+    console.log(state.mutations.selectedData);
   }
 
-  function handleChange(event, title) {
-    console.log(state.multiSelectTypes.selectedData)
-    console.log("competeing search event handler triggered")
-    console.log(event)
-    console.log(title)
-    const {
-      target: { value },
-    } = event;
+  // Individual handlechange functions for each of the multiselects
+  function handleTypeChange(event) {
+    console.log(event);
     setState((draft) => {
-      if (typeof value === "string") {
-        draft.multiSelectTypes.selectedData = value.split(",");
-      } else {
-        draft.multiSelectTypes.selectedData = {...state.multiSelectTypes, value};
-      }
+      draft.types.selectedData = event.target.value;
     });
-    
-  };
+  }
+
+  function handleStageChange(event) {
+    setState((draft) => {
+      draft.stages.selectedData = event.target.value;
+    });
+  }
+
+  function handleMutationChange(event) {
+    setState((draft) => {
+      draft.mutations.selectedData = event.target.value;
+    });
+  }
+
+  function handleLineChange(event) {
+    setState((draft) => {
+      draft.line.selectedData = event.target.value;
+    });
+  }
+
+  function handleExpectancyChange(event) {
+    setState((draft) => {
+      draft.expectancy.selectedData = event.target.value;
+    });
+  }
+
+  function handleSwitch() {
+    setState((draft) => {
+      draft.needsMeasurableDisease = !draft.needsMeasurableDisease;
+      draft.haveResults = !draft.haveResults;
+    });
+  }
+
+  function getSelectedData() {
+    let allSelectedData = [];
+    if (state.types.selectedData.length) {
+      allSelectedData.push({ id: state.types.id, selectedData: state.types.selectedData });
+    }
+    if (state.stages.selectedData.length) {
+      allSelectedData.push({ id: state.stages.id, selectedData: state.stages.selectedData });
+    }
+    if (state.mutations.selectedData.length) {
+      allSelectedData.push({ id: state.mutations.id, selectedData: state.mutations.selectedData });
+    }
+    if (state.line.selectedData.length) {
+      allSelectedData.push({ id: state.line.id, selectedData: state.line.selectedData });
+    }
+    if (state.expectancy.selectedData.length) {
+      allSelectedData.push({ id: state.expectancy.id, selectedData: state.expectancy.selectedData });
+    }
+
+    return allSelectedData;
+  }
+
+  async function handleClose(menuClosedId) {
+    let allSelectedData = getSelectedData();
+    console.log(allSelectedData);
+    if (allSelectedData.length) {
+      console.log("we have data");
+      try {
+        let matchingTrials = await Axios.post("/competing-search-results", { searchData: allSelectedData });
+        console.log("we have a response", matchingTrials);
+      } catch {
+        console.log("sad");
+      }
+    }
+  }
 
   if (state.isLoading) {
     return <LoadingDotsIcon />;
@@ -88,19 +143,16 @@ function CompetingSearch(props) {
 
   return (
     <Page title="Competing Trial Search">
-      <form className="form-control" onSubmit={handleSubmit}>
+      <form className="form-control">
         <label className="lead d-flex justify-content-center align-items-center mt-4">Select Prospective Trial Patient Criteria</label>
-        <MUIMultipleComboBox selectProps={state.multiSelectTypes} onChange={handleChange} />
-        <MUIMultipleComboBox selectProps={state.multiSelectStages} onChange={handleChange} />
-        <MUIMultipleComboBox selectProps={state.multiSelectMutations} onChange={handleChange} />
-        <MUIMultipleComboBox selectProps={state.multiSelectLine} onChange={handleChange} />
-        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" />} label="Needs Measurable Disease?" className="mx-3" />
-        <MUIMultipleComboBox selectProps={state.multiSelectExpectancy} onChange={handleChange} />
-        <div className="d-flex justify-content-center align-items-center mb-4">
-          {state.multiSelectTypes.selectedData}
-          <button className="btn">Submit</button>
-        </div>
+        <MUIMultipleComboBox selectProps={state.types} onClose={handleClose} onChange={handleTypeChange} />
+        <MUIMultipleComboBox selectProps={state.stages} onClose={handleClose} onChange={handleStageChange} />
+        <MUIMultipleComboBox selectProps={state.mutations} onClose={handleClose} onChange={handleMutationChange} />
+        <MUIMultipleComboBox selectProps={state.line} onClose={handleClose} onChange={handleLineChange} />
+        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} label="Needs Measurable Disease?" className="mx-3" />
+        <MUIMultipleComboBox selectProps={state.expectancy} onClose={handleClose} onChange={handleExpectancyChange} />
       </form>
+      {state.haveResults ? <TrialSearchResults></TrialSearchResults> : ""}
     </Page>
   );
 }

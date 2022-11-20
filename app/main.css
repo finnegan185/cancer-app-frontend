@@ -13,7 +13,7 @@ body {
 }
 
 .form-color {
-  background-color: var(--bg);
+  background-color: var(--bg-accent);
 }
 
 .page-color {
