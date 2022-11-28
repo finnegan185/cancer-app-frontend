@@ -11,7 +11,7 @@ function Page(props) {
     }
   }, [props.title]);
 
-  return <Container>{props.children}</Container>;
+  return <Container wide={props.wide}>{props.children}</Container>;
 }
 
 export default Page;

@@ -12,6 +12,20 @@ body {
   background-color: var(--bg);
 }
 
+.results-container {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  background-color: #fff;
+}
+
+.header--text {
+  color: #5d5b5b;
+  margin-inline: 0.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--header-accent);
+}
+
 .form-color {
   background-color: var(--bg-accent);
 }
@@ -32,23 +46,11 @@ body {
   background-color: #fff;
 }
 
-.navbar--yellowgold {
+.navbar--gold {
   --bs-bg-opacity: 1;
   background-color: var(--bg-accent);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-}
-
-.navbar--redwhiteyellow {
-  border-top: 4px solid var(--header-accent);
-  --bs-bg-opacity: 1;
-}
-
-.navbar--padding {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-left: 10px;
-  padding-right: 10px;
 }
 
 .nav-link--text {
@@ -72,43 +74,6 @@ body {
 
 footer {
   background-color: var(--bg);
-}
-
-@-webkit-keyframes spin {
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-@keyframes spin {
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
-.circle-loader {
-  opacity: 0;
-  transition: opacity 0.45s ease-out, visibility 0.45s ease-out;
-  visibility: hidden;
-  position: absolute;
-  left: 50%;
-  box-sizing: border-box;
-  width: 65px;
-  height: 65px;
-  border-radius: 100%;
-  border: 10px solid rgba(73, 80, 87, 0.2);
-  border-top-color: #495057;
-  will-change: -webkit-transform, transform;
-  -webkit-transform: rotate(0deg);
-  transform: rotate(0deg);
-  -webkit-animation: spin 1s infinite linear;
-  animation: spin 1s infinite linear;
-}
-
-.circle-loader--visible {
-  visibility: visible;
-  opacity: 1;
 }
 
 .floating-alert {

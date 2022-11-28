@@ -1,36 +1,47 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function Header(props) {
   return (
     <header className="header">
-      <div className="header-bar--black"></div>
-      <div className="header-bar--redwhite px-5">
-        <Link to="/">
-          <img src="\public\UniversityofZackLogoSmall.jpg" alt="logo" />
-        </Link>
+      <div className="header-bar--redwhite">
+        <div className="container">
+          <Link to="/">
+            <img src="\public\UniversityofZackLogoSmall.jpg" alt="logo" />
+          </Link>
+        </div>
       </div>
-      <nav className="navbar navbar-expand-md navbar--yellowgold px-5">
-        <div className="container-fluid">
+      <nav className="navbar navbar-expand-md navbar--gold">
+        <div className="container container-fluid">
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarToggler">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link className="nav-link nav-link--text px-3" to="/">
+                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/">
                   Home
-                </Link>
+                </NavLink>
               </li>
               <li className="nav-item">
-                <Link className="nav-link nav-link--text px-3" to="/homeAlt">
+                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/homeAlt">
                   About
-                </Link>
+                </NavLink>
               </li>
-              <li className="nav-item nav-item--active">
-                <Link className="nav-link nav-link--text px-3" to="/competing-search">
+              <li className="nav-item">
+                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/competing-search">
                   Find Competing Trials
-                </Link>
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/search-how-to">
+                  Search How To
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/all-trials">
+                  All Trials
+                </NavLink>
               </li>
             </ul>
           </div>

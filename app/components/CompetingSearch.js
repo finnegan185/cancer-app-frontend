@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
 import Axios from "axios";
-import { FormControlLabel, FormControl } from "@mui/material";
+import { FormControlLabel, Paper } from "@mui/material";
 
 // My Components
 import Page from "./Page";
@@ -9,10 +9,9 @@ import MUIMultipleComboBox from "./MUIMultipleComboBox";
 import GoldSwitch from "./GoldSwitch";
 import LoadingDotsIcon from "./LoadingDotsIcon";
 import TrialSearchResults from "./TrialSearchResults";
+import TrialResultCard from "./TrialResultCard";
 
 function CompetingSearch(props) {
-  console.log("Competing search linked to");
-
   // Create the state for the component
   const [state, setState] = useImmer({
     isLoading: true,
@@ -21,8 +20,9 @@ function CompetingSearch(props) {
     mutations: { title: "Disease Mutation(s)", data: [], selectedData: [], id: "mutation" },
     line: { title: "Line of Therapy", data: [], selectedData: [], id: "line" },
     expectancy: { title: "Life Expectancy", data: [], selectedData: [], id: "expectancy" },
-    needsMeasurableDisease: false,
-    haveResults: false,
+    needsMeasurableDisease: { needsMeasurable: false, id: "needsMeasurable" },
+    closeCount: 0,
+    matchingTrials: [],
   });
 
   useEffect(() => {
@@ -35,7 +35,6 @@ function CompetingSearch(props) {
 
         // Looping through the responses to populate the data for each of the multiselect objects
         if (response.data) {
-          console.log("needs measurable disease", state.needsMeasurableDisease);
           setState((draft) => {
             draft.types.data = response.data[0];
             draft.stages.data = response.data[1];
@@ -55,13 +54,6 @@ function CompetingSearch(props) {
     fetchData();
     return () => ourRequest.cancel();
   }, []);
-
-  // handle submit not done, probably not needed
-  async function handleSubmit(e) {
-    e.preventDefault();
-    console.log(state.types.selectedData);
-    console.log(state.mutations.selectedData);
-  }
 
   // Individual handlechange functions for each of the multiselects
   function handleTypeChange(event) {
@@ -97,11 +89,15 @@ function CompetingSearch(props) {
 
   function handleSwitch() {
     setState((draft) => {
-      draft.needsMeasurableDisease = !draft.needsMeasurableDisease;
-      draft.haveResults = !draft.haveResults;
+      draft.needsMeasurableDisease.needsMeasurable = !draft.needsMeasurableDisease.needsMeasurable;
+      draft.closeCount++;
     });
   }
 
+  // Database Results Search Operations
+
+  // Get all criteria that has been user selected up to the most recent
+  // menu close.
   function getSelectedData() {
     let allSelectedData = [];
     if (state.types.selectedData.length) {
@@ -119,21 +115,48 @@ function CompetingSearch(props) {
     if (state.expectancy.selectedData.length) {
       allSelectedData.push({ id: state.expectancy.id, selectedData: state.expectancy.selectedData });
     }
+    if (state.closeCount > 0) {
+      allSelectedData.push({ id: state.needsMeasurableDisease.id, needsMeasurable: state.needsMeasurableDisease.needsMeasurable });
+    }
 
     return allSelectedData;
   }
 
-  async function handleClose(menuClosedId) {
-    let allSelectedData = getSelectedData();
-    console.log(allSelectedData);
-    if (allSelectedData.length) {
-      console.log("we have data");
+  useEffect(() => {
+    const ourRequest = Axios.CancelToken.source();
+    const allSelectedData = getSelectedData();
+
+    async function fetchResults() {
       try {
-        let matchingTrials = await Axios.post("/competing-search-results", { searchData: allSelectedData });
-        console.log("we have a response", matchingTrials);
-      } catch {
-        console.log("sad");
+        const matchingResponse = await Axios.post("/competing-search-results", { searchData: allSelectedData });
+        if (matchingResponse.data) {
+          setState((draft) => {
+            draft.matchingTrials = matchingResponse.data;
+          });
+        } else {
+          setState((draft) => {
+            draft.matchingTrials = [];
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
+    }
+    if (allSelectedData.length) {
+      fetchResults();
+    }
+    return () => ourRequest.cancel();
+  }, [state.closeCount]);
+
+  // Handle close. Increments closeCount which activates the useEffect
+  // to search db for matching trials.
+  function handleClose(menuClosedId) {
+    try {
+      setState((draft) => {
+        draft.closeCount++;
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -143,8 +166,9 @@ function CompetingSearch(props) {
 
   return (
     <Page title="Competing Trial Search">
-      <form className="form-control">
-        <label className="lead d-flex justify-content-center align-items-center mt-4">Select Prospective Trial Patient Criteria</label>
+      <h2 className="header--text">Select Prospective Trial Inclusion Criteria</h2>
+      <form className="form-control shadow mb-5">
+        {/* <h2 className="headers d-flex justify-content-center align-items-center mt-4">Select Prospective Trial Patient Criteria</h2> */}
         <MUIMultipleComboBox selectProps={state.types} onClose={handleClose} onChange={handleTypeChange} />
         <MUIMultipleComboBox selectProps={state.stages} onClose={handleClose} onChange={handleStageChange} />
         <MUIMultipleComboBox selectProps={state.mutations} onClose={handleClose} onChange={handleMutationChange} />
@@ -152,7 +176,22 @@ function CompetingSearch(props) {
         <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} label="Needs Measurable Disease?" className="mx-3" />
         <MUIMultipleComboBox selectProps={state.expectancy} onClose={handleClose} onChange={handleExpectancyChange} />
       </form>
-      {state.haveResults ? <TrialSearchResults></TrialSearchResults> : ""}
+      {state.matchingTrials.length === 0 && state.closeCount > 0 ? (
+        <h2 className="header--text mt-4 mb-4">Congratulations! No Competing Trials</h2>
+      ) : state.matchingTrials.length > 0 ? (
+        <div>
+          <h2 className="header--text mt-4 mb-4">{state.matchingTrials.length > 1 ? state.matchingTrials.length + " Competing Trials" : "1 Competing Trial"}</h2>
+          <div className="results-container shadow py-3">
+            <TrialSearchResults>
+              {state.matchingTrials.map((trial) => {
+                return <TrialResultCard trial={trial} key={trial._id} />;
+              })}
+            </TrialSearchResults>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
     </Page>
   );
 }

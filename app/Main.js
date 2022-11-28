@@ -1,26 +1,33 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
 import Axios from "axios";
 Axios.defaults.baseURL = "http://localhost:8080";
 
 // My Components
 import Header from "./components/Header";
 import Home from "./components/Home";
-import HeaderAlt from "./components/HeaderAlt";
 import Footer from "./components/Footer";
 import CompetingSearch from "./components/CompetingSearch";
+import AllTrials from "./components/AllTrials";
+import SearchHowTo from "./components/SearchHowTo";
+import theme from "./theme";
 
 function Main() {
   return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/competing-search" element={<CompetingSearch />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/competing-search" element={<CompetingSearch />} />
+          <Route path="/search-how-to" element={<SearchHowTo />} />
+          <Route path="/all-trials" element={<AllTrials />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

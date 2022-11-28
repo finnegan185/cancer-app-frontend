@@ -1,10 +1,16 @@
 import React from "react";
-import Container from "./Container";
+import { Box } from "@mui/material";
 
 export default function TrialSearchResults(props) {
   return (
-    <Container className="form-color">
-      <div className="form-color">fuck you</div>
-    </Container>
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-evenly",
+      }}
+    >
+      {props.children}
+    </Box>
   );
 }
