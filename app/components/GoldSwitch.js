@@ -1,6 +1,6 @@
 import React from "react";
 import { alpha, styled } from "@mui/material/styles";
-import { FormControl, Switch } from "@mui/material";
+import Switch from "@mui/material/Switch";
 
 const GoldSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {

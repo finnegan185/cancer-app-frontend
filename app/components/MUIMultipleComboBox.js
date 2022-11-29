@@ -8,7 +8,6 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
-import { useImmer } from "use-immer";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -35,7 +34,7 @@ export default function MUIMultipleComboBox(props) {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, my: 4, display: "flex", bgcolor: "#f7f8f8", boxShadow: 1, borderRadius: 2 }}>
+      <FormControl sx={{ m: 1, mb: 4, display: "flex", bgcolor: "#f7f8f8", boxShadow: 1, borderRadius: 2 }}>
         <InputLabel id={selectID}>{props.selectProps.title}</InputLabel>
         <Select
           name={props.selectProps.title}

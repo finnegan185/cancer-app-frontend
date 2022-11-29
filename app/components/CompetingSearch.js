@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useImmer } from "use-immer";
 import Axios from "axios";
-import { FormControlLabel, Paper } from "@mui/material";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // My Components
 import Page from "./Page";
@@ -10,6 +10,7 @@ import GoldSwitch from "./GoldSwitch";
 import LoadingDotsIcon from "./LoadingDotsIcon";
 import TrialSearchResults from "./TrialSearchResults";
 import TrialResultCard from "./TrialResultCard";
+import SearchInfoIcon from "./SearchInfoIcon";
 
 function CompetingSearch(props) {
   // Create the state for the component
@@ -57,7 +58,6 @@ function CompetingSearch(props) {
 
   // Individual handlechange functions for each of the multiselects
   function handleTypeChange(event) {
-    console.log(event);
     setState((draft) => {
       draft.types.selectedData = event.target.value;
     });
@@ -166,21 +166,24 @@ function CompetingSearch(props) {
 
   return (
     <Page title="Competing Trial Search">
-      <h2 className="header--text">Select Prospective Trial Inclusion Criteria</h2>
+      <h2 className="header--text">Competing Trial Search</h2>
       <form className="form-control shadow mb-5">
-        {/* <h2 className="headers d-flex justify-content-center align-items-center mt-4">Select Prospective Trial Patient Criteria</h2> */}
+        <div className="d-flex justify-content-between">
+          <h4 className="mt-2 ms-2">Select the inclusion criteria of the prospective trial.</h4>
+          <SearchInfoIcon />
+        </div>
         <MUIMultipleComboBox selectProps={state.types} onClose={handleClose} onChange={handleTypeChange} />
         <MUIMultipleComboBox selectProps={state.stages} onClose={handleClose} onChange={handleStageChange} />
         <MUIMultipleComboBox selectProps={state.mutations} onClose={handleClose} onChange={handleMutationChange} />
         <MUIMultipleComboBox selectProps={state.line} onClose={handleClose} onChange={handleLineChange} />
-        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} label="Needs Measurable Disease?" className="mx-3" />
+        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} label="Needs Measurable Disease?" className="mx-3 mb-3" />
         <MUIMultipleComboBox selectProps={state.expectancy} onClose={handleClose} onChange={handleExpectancyChange} />
       </form>
       {state.matchingTrials.length === 0 && state.closeCount > 0 ? (
-        <h2 className="header--text mt-4 mb-4">Congratulations! No Competing Trials</h2>
+        <h2 className="header--text mt-4">Congratulations! No Competing Trials</h2>
       ) : state.matchingTrials.length > 0 ? (
         <div>
-          <h2 className="header--text mt-4 mb-4">{state.matchingTrials.length > 1 ? state.matchingTrials.length + " Competing Trials" : "1 Competing Trial"}</h2>
+          <h2 className="header--text mt-4">{state.matchingTrials.length > 1 ? state.matchingTrials.length + " Competing Trials" : "1 Competing Trial"}</h2>
           <div className="results-container shadow py-3">
             <TrialSearchResults>
               {state.matchingTrials.map((trial) => {

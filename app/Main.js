@@ -11,7 +11,6 @@ import Home from "./components/Home";
 import Footer from "./components/Footer";
 import CompetingSearch from "./components/CompetingSearch";
 import AllTrials from "./components/AllTrials";
-import SearchHowTo from "./components/SearchHowTo";
 import theme from "./theme";
 
 function Main() {
@@ -22,7 +21,6 @@ function Main() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/competing-search" element={<CompetingSearch />} />
-          <Route path="/search-how-to" element={<SearchHowTo />} />
           <Route path="/all-trials" element={<AllTrials />} />
         </Routes>
         <Footer />

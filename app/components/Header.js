@@ -34,11 +34,6 @@ function Header(props) {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/search-how-to">
-                  Search How To
-                </NavLink>
-              </li>
-              <li className="nav-item">
                 <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/all-trials">
                   All Trials
                 </NavLink>
