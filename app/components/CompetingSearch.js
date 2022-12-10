@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Axios from "axios";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -11,6 +11,7 @@ import LoadingDotsIcon from "./LoadingDotsIcon";
 import TrialSearchResults from "./TrialSearchResults";
 import TrialResultCard from "./TrialResultCard";
 import SearchInfoIcon from "./SearchInfoIcon";
+import ZUniSnackbar from "./ZUniSnackbar";
 
 function CompetingSearch(props) {
   // Create the state for the component
@@ -24,6 +25,7 @@ function CompetingSearch(props) {
     needsMeasurableDisease: { needsMeasurable: false, id: "needsMeasurable" },
     closeCount: 0,
     matchingTrials: [],
+    flashMessage: {},
   });
 
   useEffect(() => {
@@ -160,6 +162,18 @@ function CompetingSearch(props) {
     }
   }
 
+  useEffect(() => {
+    if (state.closeCount > 0 && state.matchingTrials.length) {
+      setState((draft) => {
+        draft.flashMessage = { message: `${state.matchingTrials.length} trials found with matching inclusion criteria`, severity: "info" };
+      });
+    } else {
+      setState((draft) => {
+        draft.flashMessage = { message: `No trials found with matching inclusion criteria`, severity: "success" };
+      });
+    }
+  }, [state.matchingTrials]);
+
   if (state.isLoading) {
     return <LoadingDotsIcon />;
   }
@@ -172,19 +186,19 @@ function CompetingSearch(props) {
           <h4 className="mt-2 ms-2">Select the inclusion criteria of the prospective trial.</h4>
           <SearchInfoIcon />
         </div>
-        <MUIMultipleComboBox selectProps={state.types} onClose={handleClose} onChange={handleTypeChange} />
-        <MUIMultipleComboBox selectProps={state.stages} onClose={handleClose} onChange={handleStageChange} />
-        <MUIMultipleComboBox selectProps={state.mutations} onClose={handleClose} onChange={handleMutationChange} />
-        <MUIMultipleComboBox selectProps={state.line} onClose={handleClose} onChange={handleLineChange} />
-        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} label="Needs Measurable Disease?" className="mx-3 mb-3" />
-        <MUIMultipleComboBox selectProps={state.expectancy} onClose={handleClose} onChange={handleExpectancyChange} />
+        <MUIMultipleComboBox selectProps={state.types} dataCY="typeSelector" onClose={handleClose} onChange={handleTypeChange} />
+        <MUIMultipleComboBox selectProps={state.stages} dataCY="stageSelector" onClose={handleClose} onChange={handleStageChange} />
+        <MUIMultipleComboBox selectProps={state.mutations} dataCY="mutationSelector" onClose={handleClose} onChange={handleMutationChange} />
+        <MUIMultipleComboBox selectProps={state.line} dataCY="lineSelector" onClose={handleClose} onChange={handleLineChange} />
+        <FormControlLabel control={<GoldSwitch title="Needs Measurable Disease?" onChange={handleSwitch} />} data-cy="measurable-switch" label="Needs Measurable Disease?" className="mx-3 mb-3" />
+        <MUIMultipleComboBox selectProps={state.expectancy} dataCY="expectancySelector" onClose={handleClose} onChange={handleExpectancyChange} />
       </form>
       {state.matchingTrials.length === 0 && state.closeCount > 0 ? (
         <h2 className="header--text mt-4">Congratulations! No Competing Trials</h2>
       ) : state.matchingTrials.length > 0 ? (
         <div>
           <h2 className="header--text mt-4">{state.matchingTrials.length > 1 ? state.matchingTrials.length + " Competing Trials" : "1 Competing Trial"}</h2>
-          <div className="results-container shadow py-3">
+          <div className="results-container shadow py-3" data-cy="results">
             <TrialSearchResults>
               {state.matchingTrials.map((trial) => {
                 return <TrialResultCard trial={trial} key={trial._id} />;
@@ -195,6 +209,7 @@ function CompetingSearch(props) {
       ) : (
         ""
       )}
+      {state.closeCount > 0 ? <ZUniSnackbar message={state.flashMessage} /> : ""}
     </Page>
   );
 }

@@ -19,8 +19,9 @@ function SearchInfoIcon() {
 
   return (
     <div>
-      <InfoIcon className="mt-1" aria-describedby={id} onClick={handleClick} color="info"></InfoIcon>
+      <InfoIcon data-cy="find-trials-tooltip-icon" className="mt-1" aria-describedby={id} onClick={handleClick} color="info"></InfoIcon>
       <Popover
+        data-cy="find-trials-tooltip-text"
         id={id}
         open={open}
         anchorEl={anchorEl}

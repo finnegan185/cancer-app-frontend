@@ -37,6 +37,7 @@ export default function MUIMultipleComboBox(props) {
       <FormControl sx={{ m: 1, mb: 4, display: "flex", bgcolor: "#f7f8f8", boxShadow: 1, borderRadius: 2 }}>
         <InputLabel id={selectID}>{props.selectProps.title}</InputLabel>
         <Select
+          data-cy={props.dataCY}
           name={props.selectProps.title}
           labelId={inputID}
           id={selectID}

@@ -12,7 +12,7 @@ export default function BasicCard(props) {
   }
 
   return (
-    <Card sx={{ width: "300px", m: 1, background: "#f7f8f8" }} className="shadow">
+    <Card data-cy={props.trial.trialNumber} sx={{ width: "300px", m: 1, background: "#f7f8f8" }} className="shadow">
       <CardContent sx={{ pb: 1, background: "#ffcd00" }}>
         <Typography variant="h6" component="div">
           Trial Number: {props.trial.trialNumber}

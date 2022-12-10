@@ -4,9 +4,9 @@ import { Link, NavLink } from "react-router-dom";
 function Header(props) {
   return (
     <header className="header">
-      <div className="header-bar--redwhite">
+      <div className="header-bar--redwhite" data-cy="click-me">
         <div className="container">
-          <Link to="/">
+          <Link to="/" data-cy="logoToHome">
             <img src="\public\UniversityofZackLogoSmall.jpg" alt="logo" />
           </Link>
         </div>
@@ -19,22 +19,17 @@ function Header(props) {
           <div className="collapse navbar-collapse" id="navbarToggler">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/">
+                <NavLink className="nav-link nav-link--text px-3" data-cy="home" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/">
                   Home
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/homeAlt">
-                  About
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/competing-search">
+                <NavLink className="nav-link nav-link--text px-3" data-cy="find-trials" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/competing-search">
                   Find Competing Trials
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link nav-link--text px-3" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/all-trials">
+                <NavLink className="nav-link nav-link--text px-3" data-cy="all-trials" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/all-trials">
                   All Trials
                 </NavLink>
               </li>
