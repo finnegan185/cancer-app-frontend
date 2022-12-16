@@ -2,3 +2,4 @@
 node_modules
 Database_Private
 .vscode
+/dist
