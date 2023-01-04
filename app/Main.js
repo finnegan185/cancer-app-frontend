@@ -13,6 +13,7 @@ const CompetingSearch = React.lazy(() => import("./components/CompetingSearch"))
 const AllTrials = React.lazy(() => import("./components/AllTrials"));
 import theme from "./theme";
 import LoadingDotsIcon from "./components/LoadingDotsIcon";
+import About from "./components/About";
 
 function Main() {
   return (
@@ -22,6 +23,7 @@ function Main() {
         <Suspense fallback={<LoadingDotsIcon />}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
             <Route path="/competing-search" element={<CompetingSearch />} />
             <Route path="/all-trials" element={<AllTrials />} />
           </Routes>

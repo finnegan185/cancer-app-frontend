@@ -24,6 +24,11 @@ function Header(props) {
                 </NavLink>
               </li>
               <li className="nav-item">
+                <NavLink className="nav-link nav-link--text px-3" data-cy="about" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/about">
+                  About
+                </NavLink>
+              </li>
+              <li className="nav-item">
                 <NavLink className="nav-link nav-link--text px-3" data-cy="find-trials" style={({ isActive }) => (isActive ? { borderRadius: "2rem", backgroundColor: "#fff" } : undefined)} to="/competing-search">
                   Find Competing Trials
                 </NavLink>
